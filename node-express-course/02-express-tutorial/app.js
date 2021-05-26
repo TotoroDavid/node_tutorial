@@ -1,33 +1,50 @@
 const express = require('express')
 const app = express()
-const morgan = require('morgan')
-const logger = require('./logger')
-const authorize = require('./authorize')
 
-// req => middleware => res
+let { people } = require('./data')
 
-// 1. use vs routes
-//2. options - our own / express/ third party routes
+// static assets 
+app.use(express.static('./methods-public'))
+    // parse form data 
+app.use(express.urlencoded({ extended: false }))
+    //parse json 
+app.use(express.json())
 
-// app.use([logger, authorize])
-// app.use (express.static('./public))
-
-app.use(morgan('tiny'))
-app.get('/', (req, res) => {
-    res.send("Home")
-})
-app.get('/about', (req, res) => {
-    res.send("About")
+app.get('/api/people', (req, res) => {
+    res.status(200).json({ success: true, data: people })
 })
 
-app.get('/api/products', (req, res) => {
-    res.send("Products")
-})
-app.get('/api/items', (req, res) => {
-    res.send("Items ")
+app.post('/api/people', (req, res) => {
+    const { name } = req.body
+    if (!name) {
+        return res.status(400).json({ success: false, msg: 'please provide name value' })
+    }
+    res.status(201).json({ success: true, person: name })
 })
 
+app.post('/api/postman/people', (req, res) => {
+    const { name } = req.body
+    if (!name) {
+        return res.status
+            .status(400)
+            .json({ success: false, msg: 'please provide name value' })
+    }
+})
+
+app.post('/login', (req, res) => {
+    const { name } = req.body
+    if (name) {
+        return res.status(200).send(`Wellcome ${name}`)
+    }
+
+    res.status(401).send(' please provide credentials')
+})
 
 app.listen(5000, () => {
     console.log('Server is listening on port 5000....');
 })
+
+//get Read Data
+// Post Insert Database
+//Put Update Database
+// Delete Delete Database
